@@ -1,3 +1,4 @@
+from config.conf import BOT_NAME, BOT_PASS
 from speakeasypy import Speakeasy, Chatroom
 from typing import List
 import time
@@ -59,5 +60,5 @@ class Agent:
 
 
 if __name__ == '__main__':
-    demo_bot = Agent("bot_name", "bot_pass")
+    demo_bot = Agent(BOT_NAME, BOT_PASS)
     demo_bot.listen()
