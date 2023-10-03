@@ -1,4 +1,4 @@
-config/config.py
+config/conf.py
 usecases/files/ddis-movie-graph.nt
 usecases/files/entity_embeds.npy
 usecases/files/relation_embeds.npy
