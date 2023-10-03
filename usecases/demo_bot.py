@@ -1,5 +1,20 @@
+# set up steps
+# 1. have a conf.py file in config package
+# 2. put the database files in the good place usecases/files cf README_FILES.md
+# 3. USE QUERIES WHILE COMMUNICATING WITH THE BOT LIKE IN A CODE EXAMPLE 
+'''
+            prefix wdt: <http://www.wikidata.org/prop/direct/>
+            prefix wd: <http://www.wikidata.org/entity/>
+
+            SELECT ?obj ?lbl WHERE {
+                ?ent rdfs:label "Jean Van Hamme"@en .
+                ?ent wdt:P106 ?obj .
+                ?obj rdfs:label ?lbl .
+            }
+'''
+
 # 1 - OPTIONAL - start time when load graph database
-# 2 - NOT WORKING PROVIDED REQUESTS
+# 2 - PROVIDED REQUESTS DO NOT WORK (even using the assignmeent.ipynb notebook) - ASK TO TEACHER / COLLEAGUES ? 
 
 # rdflib in order to request a graph database using SPARQL
 # and do calls (queries) to this database in the code
