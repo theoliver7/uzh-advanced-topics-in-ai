@@ -1,18 +1,73 @@
-from config.conf import BOT_NAME, BOT_PASS
+# 1 - OPTIONAL - start time when load graph database
+# 2 - NOT WORKING PROVIDED REQUESTS
+
+# rdflib in order to request a graph database using SPARQL
+# and do calls (queries) to this database in the code
+
+from config.conf import BOT_NAME, BOT_PASS, FILES_PATH
 from speakeasypy import Speakeasy, Chatroom
 from typing import List
 import time
+import csv
+import numpy as np
+import os
+import rdflib
+import pandas as pd
 
 DEFAULT_HOST_URL = 'https://speakeasy.ifi.uzh.ch'
 listen_freq = 2
+
+# --> ***DAVID*** INTEGRATE GRAPH OBJECT AND ITS DEPENDENCIES
+WD = rdflib.Namespace('http://www.wikidata.org/entity/')
+WDT = rdflib.Namespace('http://www.wikidata.org/prop/direct/')
+DDIS = rdflib.Namespace('http://ddis.ch/atai/')
+RDFS = rdflib.namespace.RDFS
+SCHEMA = rdflib.Namespace('http://schema.org/')
+
+# database files, in order to improve bot start time (1min45... on my computer),
+# we can try to serialize (write a binary file) the graph object,
+# and deserialize it (read a binary file and load it in memory)
+graph = rdflib.Graph().parse(f'{FILES_PATH}ddis-movie-graph.nt', format='turtle')
+#entity_emb = np.load(f'{FILES_PATH}entity_embeds.npy')
+#relation_emb = np.load(f'{FILES_PATH}relation_embeds.npy')
+# relationships
+triples = {(s, p, o) for s, p, o in graph.triples((None, None, None)) if isinstance(o, rdflib.term.URIRef)}
+# ***DAVID*** INTEGRATE GRAPH OBJECT AND ITS DEPENDENCIES <--
 
 
 class Agent:
     def __init__(self, username, password):
         self.username = username
-        # Initialize the Speakeasy Python framework and login.
+        # --> ***DAVID*** - Initialize the Speakeasy Python framework and login.
         self.speakeasy = Speakeasy(host=DEFAULT_HOST_URL, username=username, password=password)
         self.speakeasy.login()  # This framework will help you log out automatically when the program terminates.
+        # ***DAVID*** - Initialize the Speakeasy Python framework and login. <--
+
+    # --> ***DAVID*** add method to query the graph object from the agent
+    def query_graphql(self, query_message: str):
+        # exemple of working query on td example
+        '''
+            prefix wdt: <http://www.wikidata.org/prop/direct/>
+            prefix wd: <http://www.wikidata.org/entity/>
+
+            SELECT ?obj ?lbl WHERE {
+                ?ent rdfs:label "Jean Van Hamme"@en .
+                ?ent wdt:P106 ?obj .
+                ?obj rdfs:label ?lbl .
+            }
+        '''
+        # result formatted in a set
+        query_result = set(graph.query(query_message))
+
+        # display in beautiful mode
+        bot_result = {ent[len(WD):]: str(lbl) for ent, lbl in query_result}
+
+        # display only in bot console on your computer
+        print(bot_result)
+
+        return bot_result
+    # ***DAVID*** add method to query the graph object from the agent <--
+
 
     def listen(self):
         while True:
@@ -35,7 +90,19 @@ class Agent:
                     # Implement your agent here #
 
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
-                    room.post_messages(f"Received your message: '{message.message}' ")
+                    room.post_messages(f"Received your message: '{message.message}")
+
+                    # --> ***DAVID*** ADD RETURN FROM BOT
+                    try:
+                        # ask bot response using graph db
+                        bot_resp = self.query_graphql(message.message)
+                        # bot send the result in the chat (web interface : https://speakeasy.ifi.uzh.ch/chat...)
+                        room.post_messages(f"GRAPHQL response: {bot_resp}")
+                    except Exception as e:
+                        print(e)
+                    # ***DAVID*** ADD RETURN FROM BOT <--
+
+
                     # Mark the message as processed, so it will be filtered out when retrieving new messages.
                     room.mark_as_processed(message)
 
