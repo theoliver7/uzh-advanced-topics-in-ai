@@ -12,22 +12,21 @@
                 ?obj rdfs:label ?lbl .
             }
 '''
-
+import os
+import pickle
 # 1 - OPTIONAL - start time when load graph database
 # 2 - PROVIDED REQUESTS DO NOT WORK (even using the assignmeent.ipynb notebook) - ASK TO TEACHER / COLLEAGUES ? 
 
 # rdflib in order to request a graph database using SPARQL
 # and do calls (queries) to this database in the code
 
+import time
+from typing import List
+
+import rdflib
+
 from config.conf import BOT_NAME, BOT_PASS, FILES_PATH
 from speakeasypy import Speakeasy, Chatroom
-from typing import List
-import time
-import csv
-import numpy as np
-import os
-import rdflib
-import pandas as pd
 
 DEFAULT_HOST_URL = 'https://speakeasy.ifi.uzh.ch'
 listen_freq = 2
@@ -42,11 +41,26 @@ SCHEMA = rdflib.Namespace('http://schema.org/')
 # database files, in order to improve bot start time (1min45... on my computer),
 # we can try to serialize (write a binary file) the graph object,
 # and deserialize it (read a binary file and load it in memory)
-graph = rdflib.Graph().parse(f'{FILES_PATH}ddis-movie-graph.nt', format='turtle')
-#entity_emb = np.load(f'{FILES_PATH}entity_embeds.npy')
-#relation_emb = np.load(f'{FILES_PATH}relation_embeds.npy')
+import os
+
+serialized_path= f'{FILES_PATH}ddis-movie-graph.nt.pickle'
+
+if not os.path.exists(serialized_path):
+    print("parsing graph")
+    graph = rdflib.Graph().parse(f'{FILES_PATH}ddis-movie-graph.nt', format='turtle')
+    with open(serialized_path, "wb") as f:
+        pickle.dump(graph, f)
+else:
+    with open(serialized_path, "rb") as f:
+        print("loading graph")
+        graph = pickle.load(f)
+
+# entity_emb = np.load(f'{FILES_PATH}entity_embeds.npy')
+# relation_emb = np.load(f'{FILES_PATH}relation_embeds.npy')
 # relationships
 triples = {(s, p, o) for s, p, o in graph.triples((None, None, None)) if isinstance(o, rdflib.term.URIRef)}
+
+
 # ***DAVID*** INTEGRATE GRAPH OBJECT AND ITS DEPENDENCIES <--
 
 
@@ -73,16 +87,15 @@ class Agent:
         '''
         # result formatted in a set
         query_result = set(graph.query(query_message))
-
         # display in beautiful mode
-        bot_result = {ent[len(WD):]: str(lbl) for ent, lbl in query_result}
+        bot_result = list(query_result)[0][0]
 
         # display only in bot console on your computer
         print(bot_result)
 
         return bot_result
-    # ***DAVID*** add method to query the graph object from the agent <--
 
+    # ***DAVID*** add method to query the graph object from the agent <--
 
     def listen(self):
         while True:
@@ -104,19 +117,15 @@ class Agent:
 
                     # Implement your agent here #
 
-                    # Send a message to the corresponding chat room using the post_messages method of the room object.
-                    room.post_messages(f"Received your message: '{message.message}")
-
                     # --> ***DAVID*** ADD RETURN FROM BOT
                     try:
                         # ask bot response using graph db
                         bot_resp = self.query_graphql(message.message)
                         # bot send the result in the chat (web interface : https://speakeasy.ifi.uzh.ch/chat...)
-                        room.post_messages(f"GRAPHQL response: {bot_resp}")
+                        room.post_messages(f"{bot_resp}")
                     except Exception as e:
                         print(e)
                     # ***DAVID*** ADD RETURN FROM BOT <--
-
 
                     # Mark the message as processed, so it will be filtered out when retrieving new messages.
                     room.mark_as_processed(message)
