@@ -78,12 +78,14 @@ class Agent:
         # ***DAVID*** - Initialize the Speakeasy Python framework and login. <--
         # --> ***DAVID*** - Add mode in order to handle multi response type
         self.mode = mode
-        self.generation_pipeline = pipeline("text-generation", model='gpt2')
+        #self.generation_pipeline = pipeline("text-generation", model='gpt2')
+        self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-1.3B')
         # <--
 
     # --> ***DAVID*** add method to query the text generation pipeline from the agent
     def query_text_generation_pipeline(self, query_message: str):
-        generated_text = self.generation_pipeline(text_inputs=query_message, max_new_tokens=20)
+        #generated_text = self.generation_pipeline(text_inputs=query_message, max_new_tokens=200)
+        generated_text = self.generation_pipeline(query_message, max_length=100, do_sample=True, temperature=0.9)
 
         print("***DEBUG TEXT GENERATION***")
         print(generated_text)
