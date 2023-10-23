@@ -2,6 +2,7 @@ from speakeasypy import Speakeasy, Chatroom
 from typing import List
 import time
 
+from usecases.cache import Cache
 from usecases.graph import Graph
 from usecases.llm import LLM
 from usecases.question_analyser import QuestionAnalyser
@@ -18,6 +19,7 @@ class Agent:
         self.llm = LLM()
         self.graph = Graph()
         self.analyser = QuestionAnalyser()
+        self.cacher = Cache()
         print("---READY FOR OPERATION---")
 
     def listen(self):
@@ -38,13 +40,19 @@ class Agent:
                         f"- new message #{message.ordinal}: '{message.message}' "
                         f"- {self.get_time()}")
 
-                    # Implement your agent here #
-                    movie_titles = self.analyser.get_movie_title(message.message)
-                    movie_data = self.graph.get_film_info(movie_titles)
-                    if movie_data:
-                        response = self.llm.ask_about_movies(question=message.message,data=movie_data)
+                    if message.message in self.cacher.cache:
+                        print("Cache Hit!")
+                        response =  self.cacher.cache[message.message]
                     else:
-                        response = self.llm.ask_no_data(message.message)
+                        movie_titles = self.analyser.get_movie_title(message.message)
+                        movie_data = self.graph.get_film_info(movie_titles)
+                        if movie_data:
+                            response = self.llm.ask_about_movies(question=message.message, data=movie_data)
+                        else:
+                            response = self.llm.ask_no_data(message.message)
+
+                        self.cacher.cache_message(message.message, response)
+                    print("POSTING RESPONE:",message)
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
                     room.post_messages(response)
                     # Mark the message as processed, so it will be filtered out when retrieving new messages.
