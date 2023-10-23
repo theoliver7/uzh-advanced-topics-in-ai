@@ -41,7 +41,10 @@ class Agent:
                     # Implement your agent here #
                     movie_titles = self.analyser.get_movie_title(message.message)
                     movie_data = self.graph.get_film_info(movie_titles)
-                    response = self.llm.ask_about_movies(movie_data,movie_data)
+                    if movie_data:
+                        response = self.llm.ask_about_movies(question=message.message,data=movie_data)
+                    else:
+                        response = self.llm.ask_no_data(message.message)
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
                     room.post_messages(response)
                     # Mark the message as processed, so it will be filtered out when retrieving new messages.

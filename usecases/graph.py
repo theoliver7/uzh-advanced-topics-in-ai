@@ -46,4 +46,5 @@ class Graph:
                     add_value("tag", str(row[2]))
 
             data.append(film_info)
+            print(data)
         return data
