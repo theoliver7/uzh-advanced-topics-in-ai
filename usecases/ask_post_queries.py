@@ -79,7 +79,7 @@ class Agent:
         # --> ***DAVID*** - Add mode in order to handle multi response type
         self.mode = mode
         #self.generation_pipeline = pipeline("text-generation", model='gpt2')
-        self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-1.3B')
+        self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
         # <--
 
     # --> ***DAVID*** add method to query the text generation pipeline from the agent
