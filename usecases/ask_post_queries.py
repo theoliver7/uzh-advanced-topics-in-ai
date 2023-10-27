@@ -85,7 +85,7 @@ class Agent:
     # --> ***DAVID*** add method to query the text generation pipeline from the agent
     def query_text_generation_pipeline(self, query_message: str):
         #generated_text = self.generation_pipeline(text_inputs=query_message, max_new_tokens=200)
-        generated_text = self.generation_pipeline(query_message, max_length=100, do_sample=True, temperature=0.9)
+        generated_text = self.generation_pipeline(query_message, max_length=400, do_sample=True, temperature=0.9)
 
         print("***DEBUG TEXT GENERATION***")
         print(generated_text)
