@@ -52,8 +52,9 @@ class Agent:
         self.graph = Graph()
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
+        self.mode = Agent.TEXT_GENERATION_MODE
         self.mode = Agent.QUERY_MODE
-        self.generation_pipeline = pipeline("text-generation", model='gpt2')
+        self.generation_pipeline = pipeline("text-generation")
         #self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
         #self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-1.3B')
         print("---READY FOR OPERATION---")
@@ -66,15 +67,7 @@ class Agent:
 
         return generated_text[0]['generated_text']
 
-    def _set_response_mode_on_ask(self, message):
-        if message.message == Agent.SET_MODE:
-            if self.mode == Agent.QUERY_MODE:
-                self.mode = Agent.TEXT_GENERATION_MODE
-            else:
-                self.mode = Agent.QUERY_MODE
-            print(f'SET MODE to {self.mode}')
-        else:
-            message.message = ''
+
     def listen(self):
         while True:
             # only check active chatrooms (i.e., remaining_time > 0) if active=True.
@@ -93,8 +86,6 @@ class Agent:
                         f"- new message #{message.ordinal}: '{message.message}' "
                         f"- {self.get_time()}")
 
-                    self._set_response_mode_on_ask(message)
-
                     if message.message in self.cacher.cache:
                         print("Cache Hit!")
                         response = self.cacher.cache[message.message]
@@ -111,8 +102,10 @@ class Agent:
 
                         self.cacher.cache_message(message.message, response)
                     print(f"POSTING RESPONE: {message}")
+
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
                     room.post_messages(response)
+
                     # Mark the message as processed, so it will be filtered out when retrieving new messages.
                     room.mark_as_processed(message)
 
