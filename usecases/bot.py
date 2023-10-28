@@ -53,7 +53,9 @@ class Agent:
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
         self.mode = Agent.QUERY_MODE
-        self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
+        self.generation_pipeline = pipeline("text-generation", model='gpt2')
+        #self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
+        #self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-1.3B')
         print("---READY FOR OPERATION---")
 
     def _query_text_generation_pipeline(self, query_message: str) -> str:
@@ -71,7 +73,8 @@ class Agent:
             else:
                 self.mode = Agent.QUERY_MODE
             print(f'SET MODE to {self.mode}')
-
+        else:
+            message.message = ''
     def listen(self):
         while True:
             # only check active chatrooms (i.e., remaining_time > 0) if active=True.
@@ -90,12 +93,12 @@ class Agent:
                         f"- new message #{message.ordinal}: '{message.message}' "
                         f"- {self.get_time()}")
 
+                    self._set_response_mode_on_ask(message)
+
                     if message.message in self.cacher.cache:
                         print("Cache Hit!")
                         response = self.cacher.cache[message.message]
                     else:
-                        self._set_response_mode_on_ask(message)
-
                         if self.mode == Agent.QUERY_MODE:
                             movie_titles = self.analyser.get_movie_title(message.message)
                             movie_data = self.graph.get_film_info(movie_titles)
