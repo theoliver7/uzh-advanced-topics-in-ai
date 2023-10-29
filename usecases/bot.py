@@ -54,9 +54,7 @@ class Agent:
         self.cacher = Cache()
         self.mode = Agent.TEXT_GENERATION_MODE
         self.mode = Agent.QUERY_MODE
-        self.generation_pipeline = pipeline("text-generation")
-        #self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
-        #self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-1.3B')
+        self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
         print("---READY FOR OPERATION---")
 
     def _query_text_generation_pipeline(self, query_message: str) -> str:
