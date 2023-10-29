@@ -52,6 +52,7 @@ class Agent:
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
         #self.mode = Agent.TEXT_GENERATION_MODE
+        #we remove the above line if we want to use GPT3 and we remove the line below if we want to use Llama
         self.mode = Agent.QUERY_MODE
         self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
         print("---READY FOR OPERATION---")
