@@ -1,7 +1,7 @@
 from usecases.util.cache import Cache
 from usecases.util.graph import Graph
 from usecases.util.llm import LLM
-from explorations.question_analyser import QuestionAnalyser
+from usecases.util.question_analyser import QuestionAnalyser
 
 import os
 import pickle
@@ -42,7 +42,6 @@ class Agent:
     QUERY_MODE: str = "QUERY"
     TEXT_GENERATION_MODE: str = "TEXT_GENERATION"
     TEXT_GENERATION_RESPONSE_LENGTH = 400
-    SET_MODE: str = "SET_MODE"
 
     def __init__(self, username: str, password: str):
         self.username: str = username
@@ -52,7 +51,7 @@ class Agent:
         self.graph = Graph()
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
-        self.mode = Agent.TEXT_GENERATION_MODE
+        #self.mode = Agent.TEXT_GENERATION_MODE
         self.mode = Agent.QUERY_MODE
         self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
         print("---READY FOR OPERATION---")
