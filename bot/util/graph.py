@@ -2,14 +2,16 @@ import pickle
 
 from collections import defaultdict
 
+from config.conf import HIGH_PRIO_PICKLE_PATH, FILM_PICKLE_PATH
+
 
 class Graph:
     def __init__(self):
         print("--STARTING TO LOAD GRAPH--")
-        with open('../dataset/graph-high-prio.pickle', 'rb') as f:
+        with open(HIGH_PRIO_PICKLE_PATH, 'rb') as f:
             self.graph = pickle.load(f)
             print("--LOADED GRAPH--")
-        with open('../dataset/film_dict.pickle', 'rb') as f:
+        with open(FILM_PICKLE_PATH, 'rb') as f:
             self.movie_dict = pickle.load(f)
             print("--LOADED MOVIE DICT--")
 

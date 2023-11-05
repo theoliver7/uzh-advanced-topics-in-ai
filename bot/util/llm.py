@@ -2,6 +2,8 @@ from langchain.chains import LLMChain
 from langchain.llms import LlamaCpp
 from langchain.prompts import PromptTemplate
 
+from config.conf import LLMA_MODEL_PATH
+
 
 class LLM:
 
@@ -11,7 +13,7 @@ class LLM:
         # Callbacks support token-wise streaming
         # Make sure the model path is correct for your system!
         self.llm = LlamaCpp(
-            model_path="/home/oliver/dev/uzh/atai_bot/mistral-7b-openorca.Q4_0.gguf",
+            model_path=LLMA_MODEL_PATH,
             n_gpu_layers=gpu_layers,
             n_batch=n_batch,
             n_ctx=1524,

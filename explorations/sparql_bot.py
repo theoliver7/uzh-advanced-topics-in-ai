@@ -1,7 +1,7 @@
 # set up steps
 # 1. have a conf.py file in config package
 # 2. put the database files in the good place usecases/files cf README_FILES.md
-# 3. USE QUERIES WHILE COMMUNICATING WITH THE BOT LIKE IN A CODE EXAMPLE
+# 3. USE QUERIES WHILE COMMUNICATING WITH THE BOT LIKE IN A CODE EXAMPLE 
 '''
             prefix wdt: <http://www.wikidata.org/prop/direct/>
             prefix wd: <http://www.wikidata.org/entity/>
@@ -15,7 +15,7 @@
 import os
 import pickle
 # 1 - OPTIONAL - start time when load graph database
-# 2 - PROVIDED REQUESTS DO NOT WORK (even using the assignmeent.ipynb notebook) - ASK TO TEACHER / COLLEAGUES ?
+# 2 - PROVIDED REQUESTS DO NOT WORK (even using the assignmeent.ipynb notebook) - ASK TO TEACHER / COLLEAGUES ? 
 
 # rdflib in order to request a graph database using SPARQL
 # and do calls (queries) to this database in the code
@@ -25,9 +25,8 @@ from typing import List
 
 import rdflib
 
-from config.conf import BOT_NAME, BOT_PASS, FILES_PATH, DEFAULT_MODE
+from config.conf import BOT_NAME, BOT_PASS, FILES_PATH
 from speakeasypy import Speakeasy, Chatroom
-from transformers import pipeline, set_seed
 
 DEFAULT_HOST_URL = 'https://speakeasy.ifi.uzh.ch'
 listen_freq = 2
@@ -46,54 +45,32 @@ import os
 
 serialized_path= f'{FILES_PATH}ddis-movie-graph.nt.pickle'
 
-if not DEFAULT_MODE == "TEXT_GENERATION":
-    if not os.path.exists(serialized_path):
-        print("parsing graph")
-        graph = rdflib.Graph().parse(f'{FILES_PATH}ddis-movie-graph.nt', format='turtle')
-        with open(serialized_path, "wb") as f:
-            pickle.dump(graph, f)
-    else:
-        with open(serialized_path, "rb") as f:
-            print("loading graph")
-            graph = pickle.load(f)
+if not os.path.exists(serialized_path):
+    print("parsing graph")
+    graph = rdflib.Graph().parse(f'{FILES_PATH}ddis-movie-graph.nt', format='turtle')
+    with open(serialized_path, "wb") as f:
+        pickle.dump(graph, f)
+else:
+    with open(serialized_path, "rb") as f:
+        print("loading graph")
+        graph = pickle.load(f)
 
 # entity_emb = np.load(f'{FILES_PATH}entity_embeds.npy')
 # relation_emb = np.load(f'{FILES_PATH}relation_embeds.npy')
 # relationships
-#triples = {(s, p, o) for s, p, o in graph.triples((None, None, None)) if isinstance(o, rdflib.term.URIRef)}
+triples = {(s, p, o) for s, p, o in graph.triples((None, None, None)) if isinstance(o, rdflib.term.URIRef)}
 
 
 # ***DAVID*** INTEGRATE GRAPH OBJECT AND ITS DEPENDENCIES <--
 
 
 class Agent:
-    QUERY_MODE: str = "QUERY"
-    TEXT_GENERATION_MODE: str = "TEXT_GENERATION"
-
-    def __init__(self, username, password, mode):
+    def __init__(self, username, password):
         self.username = username
         # --> ***DAVID*** - Initialize the Speakeasy Python framework and login.
         self.speakeasy = Speakeasy(host=DEFAULT_HOST_URL, username=username, password=password)
         self.speakeasy.login()  # This framework will help you log out automatically when the program terminates.
         # ***DAVID*** - Initialize the Speakeasy Python framework and login. <--
-        # --> ***DAVID*** - Add mode in order to handle multi response type
-        self.mode = mode
-        #self.generation_pipeline = pipeline("text-generation", model='gpt2')
-        self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
-        # <--
-
-    # --> ***DAVID*** add method to query the text generation pipeline from the agent
-    def query_text_generation_pipeline(self, query_message: str):
-        #generated_text = self.generation_pipeline(text_inputs=query_message, max_new_tokens=200)
-        generated_text = self.generation_pipeline(query_message, max_length=400, do_sample=True, temperature=0.9)
-
-        print("***DEBUG TEXT GENERATION***")
-        print(generated_text)
-        print(generated_text[0]['generated_text'])
-        print("***DEBUG TEXT GENERATION***")
-
-        return generated_text[0]['generated_text']
-    # <-- ***DAVID*** add method to query the text generation pipeline from the agent
 
     # --> ***DAVID*** add method to query the graph object from the agent
     def query_graphql(self, query_message: str):
@@ -143,12 +120,7 @@ class Agent:
                     # --> ***DAVID*** ADD RETURN FROM BOT
                     try:
                         # ask bot response using graph db
-                        bot_resp = ''
-                        if self.mode == Agent.QUERY_MODE:
-                            bot_resp = self.query_graphql(message.message)
-                        else:
-                            bot_resp = self.query_text_generation_pipeline(message.message)
-
+                        bot_resp = self.query_graphql(message.message)
                         # bot send the result in the chat (web interface : https://speakeasy.ifi.uzh.ch/chat...)
                         room.post_messages(f"{bot_resp}")
                     except Exception as e:
@@ -179,5 +151,5 @@ class Agent:
 
 
 if __name__ == '__main__':
-    demo_bot = Agent(BOT_NAME, BOT_PASS, Agent.TEXT_GENERATION_MODE)
+    demo_bot = Agent(BOT_NAME, BOT_PASS)
     demo_bot.listen()

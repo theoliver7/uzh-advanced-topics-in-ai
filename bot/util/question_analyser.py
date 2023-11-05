@@ -1,9 +1,12 @@
 import pickle
 from fuzzywuzzy import process
 
+from config.conf import FILM_PICKLE_PATH
+
+
 class QuestionAnalyser:
     def __init__(self):
-        with open('../dataset/film_dict.pickle', 'rb') as f:
+        with open(FILM_PICKLE_PATH, 'rb') as f:
             self.film_dict = pickle.load(f)
         self.movie_titles = list(self.film_dict.keys())
 
