@@ -179,7 +179,7 @@ class RESTClientObject(object):
                 # other content types than Json when `body` argument is
                 # provided in serialized form
                 elif isinstance(body, str) or isinstance(body, bytes):
-                    request_body = body
+                    request_body = body.encode('utf-8')
                     r = self.pool_manager.request(
                         method, url,
                         body=request_body,
