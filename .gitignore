@@ -1,7 +1,7 @@
 config/conf.py
-usecases/files/ddis-movie-graph.nt
-usecases/files/entity_embeds.npy
-usecases/files/relation_embeds.npy
+bot/files/ddis-movie-graph.nt
+bot/files/entity_embeds.npy
+bot/files/relation_embeds.npy
 
 .DS_Store
 .idea/

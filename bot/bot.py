@@ -1,47 +1,18 @@
-from usecases.util.cache import Cache
-from usecases.util.graph import Graph
-from usecases.util.llm import LLM
-from usecases.util.question_analyser import QuestionAnalyser
-
-import os
-import pickle
-
 import time
 from typing import List
 
-import rdflib
-
-from config.conf import BOT_NAME, BOT_PASS, FILES_PATH, DEFAULT_MODE
+from config.conf import BOT_NAME, BOT_PASS
 from speakeasypy import Speakeasy, Chatroom
-from transformers import pipeline
-
-WD = rdflib.Namespace('http://www.wikidata.org/entity/')
-WDT = rdflib.Namespace('http://www.wikidata.org/prop/direct/')
-DDIS = rdflib.Namespace('http://ddis.ch/atai/')
-RDFS = rdflib.namespace.RDFS
-SCHEMA = rdflib.Namespace('http://schema.org/')
-
-SERIALIZED_COMPLETE_PATH = f'{FILES_PATH}ddis-movie-graph.nt.pickle'
-
-if not DEFAULT_MODE == "TEXT_GENERATION":
-    if not os.path.exists(SERIALIZED_COMPLETE_PATH):
-        print("parsing graph")
-        graph = rdflib.Graph().parse(f'{FILES_PATH}ddis-movie-graph.nt', format='turtle')
-        with open(SERIALIZED_COMPLETE_PATH, "wb") as f:
-            pickle.dump(graph, f)
-    else:
-        with open(SERIALIZED_COMPLETE_PATH, "rb") as f:
-            print("loading graph")
-            graph = pickle.load(f)
+from util.cache import Cache
+from util.graph import Graph
+from util.llm import LLM
+from util.question_analyser import QuestionAnalyser
 
 
 class Agent:
     DISPLAY_FORMAT_DATETIME: str = "%H:%M:%S, %d-%m-%Y"
     SPEAKEASY_HOST_URL: str = 'https://speakeasy.ifi.uzh.ch'
     LISTEN_FREQUENCY_IN_SECS = 2
-    QUERY_MODE: str = "QUERY"
-    TEXT_GENERATION_MODE: str = "TEXT_GENERATION"
-    TEXT_GENERATION_RESPONSE_LENGTH = 400
 
     def __init__(self, username: str, password: str):
         self.username: str = username
@@ -51,20 +22,7 @@ class Agent:
         self.graph = Graph()
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
-        #self.mode = Agent.TEXT_GENERATION_MODE
-        #we remove the above line if we want to use GPT3 and we remove the line below if we want to use Llama
-        self.mode = Agent.QUERY_MODE
-        self.generation_pipeline = pipeline("text-generation", model='EleutherAI/gpt-neo-2.7B')
         print("---READY FOR OPERATION---")
-
-    def _query_text_generation_pipeline(self, query_message: str) -> str:
-        generated_text = self.generation_pipeline(query_message, max_length=Agent.TEXT_GENERATION_RESPONSE_LENGTH, do_sample=True, temperature=0.9)
-
-        print("***DEBUG TEXT GENERATION***")
-        print(generated_text)
-
-        return generated_text[0]['generated_text']
-
 
     def listen(self):
         while True:
@@ -86,20 +44,17 @@ class Agent:
 
                     if message.message in self.cacher.cache:
                         print("Cache Hit!")
-                        response = self.cacher.cache[message.message]
+                        response =  self.cacher.cache[message.message]
                     else:
-                        if self.mode == Agent.QUERY_MODE:
-                            movie_titles = self.analyser.get_movie_title(message.message)
-                            movie_data = self.graph.get_film_info(movie_titles)
-                            if movie_data:
-                                response = self.llm.ask_about_movies(question=message.message, data=movie_data)
-                            else:
-                                response = self.llm.ask_no_data(message.message)
+                        movie_titles = self.analyser.get_movie_title(message.message)
+                        movie_data = self.graph.get_film_info(movie_titles)
+                        if movie_data:
+                            response = self.llm.ask_about_movies(question=message.message, data=movie_data)
                         else:
-                            response = self._query_text_generation_pipeline(message.message)
-
-                        self.cacher.cache_message(message.message, response)
-                    print(f"POSTING RESPONE: {message}")
+                            response = self.llm.ask_no_data(message.message)
+                        if response != "error":
+                            self.cacher.cache_message(message.message, response)
+                    print("POSTING RESPONE:",response)
 
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
                     room.post_messages(response)
