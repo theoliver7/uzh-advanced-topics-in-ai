@@ -20,26 +20,26 @@ class LLM:
             verbose=True,  # Verbose is required to pass to the callback manager
         )
 
-        film_template = """Answer the question with below information, Always answer in a sentence: {question}
-        If possible answer with below information: 
+        film_template = """You are a helpful chatbot,You are a professional in Movies. 
+        Answer the question with below information,if the 'node label' does not match the question use your knowledge, Always answer in a sentence: 
+        {question}
+        Information: 
         {movie_1}
-        If this is not the asked movie check here: 
-        {movie_2}
+        _________
         Answer: """
 
         self.film_prompt = PromptTemplate(template=film_template, input_variables=["question", "movie_1", "movie_2"])
-        empty_template = """Answer the question with below information, Always answer in a sentence: {question}
-                Answer: """
+        empty_template = """You are a helpful chatbot,You are a professional in Movies. Answer the question with your knowledge, Always answer in a sentence: 
+        {question}
+        _________
+        Answer: """
 
         self.empty_prompt = PromptTemplate(template=empty_template, input_variables=["question"])
 
     def ask_about_movies(self, question, data):
         llm_chain = LLMChain(prompt=self.film_prompt, llm=self.llm)
         try:
-            if len(data)==2:
-                output = llm_chain.run({"question":question, "movie_1":self.convert_to_string(data[0]),"movie_2":self.convert_to_string(data[1])})
-            else:
-                output = llm_chain.run({"question":question, "movie_1":self.convert_to_string(data[0]),"movie_2":"No Info"})
+            output = llm_chain.run({"question":question, "movie_1":self.convert_to_string(data[0]),"movie_2":"No Info"})
         except ValueError:
             print("ERROR VALUE error")
             output = "error"
