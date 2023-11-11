@@ -2,18 +2,26 @@ from langchain.chains import LLMChain
 from langchain.llms import LlamaCpp
 from langchain.prompts import PromptTemplate
 
-from config.conf import LLMA_MODEL_PATH
+from config.conf import LLMA_MODEL_PATH, LLMA_HEAVY_MODEL_PATH
 
 
 class LLM:
 
-    def __init__(self):
+    def __init__(self, heavy_mode: bool=False):
         gpu_layers = 20  # Change this value based on your model and your GPU VRAM pool.
         n_batch = 1024  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
         # Callbacks support token-wise streaming
         # Make sure the model path is correct for your system!
         self.llm = LlamaCpp(
             model_path=LLMA_MODEL_PATH,
+            n_gpu_layers=gpu_layers,
+            n_batch=n_batch,
+            n_ctx=1524,
+            verbose=True,  # Verbose is required to pass to the callback manager
+        )
+        self.heavy_mode: bool = heavy_mode
+        self.llm_heavy = LlamaCpp(
+            model_path=LLMA_HEAVY_MODEL_PATH,
             n_gpu_layers=gpu_layers,
             n_batch=n_batch,
             n_ctx=1524,
@@ -36,6 +44,7 @@ class LLM:
 
         self.empty_prompt = PromptTemplate(template=empty_template, input_variables=["question"])
 
+    # Not relevant to use heavy_mode here !
     def ask_about_movies(self, question, data):
         llm_chain = LLMChain(prompt=self.film_prompt, llm=self.llm)
         try:
@@ -44,14 +53,20 @@ class LLM:
             print("ERROR VALUE error")
             output = "error"
         return output
+
     def ask_no_data(self, question):
-        llm_chain = LLMChain(prompt=self.empty_prompt, llm=self.llm)
+        if not self.heavy_mode:
+            llm_chain = LLMChain(prompt=self.empty_prompt, llm=self.llm)
+        else:
+            llm_chain = LLMChain(prompt=self.empty_prompt, llm=self.llm_heavy)
         try:
           output = llm_chain.run({"question":question})
         except ValueError:
             print("ERROR VALUE error")
             output = "error"
         return output
+
+
     @staticmethod
     def convert_to_string(data):
         result_strings = []

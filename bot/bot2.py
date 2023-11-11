@@ -18,7 +18,8 @@ class Agent:
         self.username: str = username
         self.speakeasy = Speakeasy(host=Agent.SPEAKEASY_HOST_URL, username=username, password=password)
         self.speakeasy.login()  # This framework will help you log out automatically when the program terminates.
-        self.llm = LLM()
+        # Use the best dataset for open questions with no underlaying dataset
+        self.llm = LLM(heavy_mode=True)
         self.graph = Graph()
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
