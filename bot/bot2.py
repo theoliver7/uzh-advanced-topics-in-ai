@@ -54,10 +54,10 @@ class Agent:
                         print("Cache Hit!")
                         response =  self.cacher.cache[message.message]
                     else:
-                        if "{" in message.message or "}" in message.message:
+                        if "{" in message.message and "}" in message.message:
                             trimmed_message = message.message.strip()
                             self.recommender.submit_entry(self.current_user, trimmed_message)
-                            recommendations = ''.join(self.recommender.get_neighbors())
+                            recommendations = '_'.join(self.recommender.get_neighbors())
                             self._repond(message, recommendations)
                         elif "best recommendations" in message.message:
                             self._repond(message, "what is your rating ? respect this format {'Inception': 5}")
