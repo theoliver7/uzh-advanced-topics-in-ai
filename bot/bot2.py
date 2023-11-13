@@ -2,7 +2,7 @@ import time
 import uuid
 from typing import List
 
-from bot.util.recommander import Recommander
+from bot.util.recommender import Recommender
 from config.conf import BOT_NAME, BOT_PASS, BOT_PATH, BOT_BASE_PATH
 from speakeasypy import Speakeasy, Chatroom
 from util.cache import Cache
@@ -29,7 +29,7 @@ class Agent:
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
         self.current_user = str(uuid.uuid4())[:8]
-        self.recommander = Recommander()
+        self.recommender = Recommender()
         print("---READY FOR OPERATION---")
 
     def listen(self):
@@ -56,12 +56,10 @@ class Agent:
                     else:
                         if "{" in message.message or "}" in message.message:
                             trimmed_message = message.message.strip()
-                            self.recommander.submit_entry(self.current_user, trimmed_message)
-                            recommandations = ''.join(self.recommander.get_neighbors())
-                            self._repond(message, recommandations)
-                        elif "best recommandations" in message.message:
-                            room.post_messages("")
-                            room.mark_as_processed(message)
+                            self.recommender.submit_entry(self.current_user, trimmed_message)
+                            recommendations = ''.join(self.recommender.get_neighbors())
+                            self._repond(message, recommendations)
+                        elif "best recommendations" in message.message:
                             self._repond(message, "what is your rating ? respect this format {'Inception': 5}")
                         else:
                             movie_titles = self.analyser.get_movie_title(message.message)

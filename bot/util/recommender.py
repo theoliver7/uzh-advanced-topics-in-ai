@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 
 from config.conf import MOVIES_CSV_PATH, RATING_CSV_PATH
 
-class Recommander:
+class Recommender:
     def __init__(self, n_neighbors=3):
         self.n_neighbors = n_neighbors
         movies = pd.read_csv(MOVIES_CSV_PATH)
