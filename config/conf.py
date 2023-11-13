@@ -11,3 +11,6 @@ FILM_PICKLE_PATH: str = "/home/david/Documents/GitHub/datasets_and_models/film_d
 # data from https://grouplens.org/datasets/movielens/
 MOVIES_CSV_PATH: str = "/home/david/Documents/GitHub/datasets_and_models/movies.csv"
 RATING_CSV_PATH: str = "/home/david/Documents/GitHub/datasets_and_models/ratings.csv"
+
+BOT_BASE_PATH: str = "/home/david/Documents/GitHub/uzh-advanced-topics-in-ai"
+BOT_PATH: str = "/home/david/Documents/GitHub/uzh-advanced-topics-in-ai/bot"

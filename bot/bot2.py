@@ -3,13 +3,16 @@ import uuid
 from typing import List
 
 from bot.util.recommander import Recommander
-from config.conf import BOT_NAME, BOT_PASS
+from config.conf import BOT_NAME, BOT_PASS, BOT_PATH, BOT_BASE_PATH
 from speakeasypy import Speakeasy, Chatroom
 from util.cache import Cache
 from util.graph import Graph
 from util.llm import LLM
 from util.question_analyser import QuestionAnalyser
 
+import sys
+sys.path.append(BOT_PATH)
+sys.path.append(BOT_BASE_PATH)
 
 class Agent:
     DISPLAY_FORMAT_DATETIME: str = "%H:%M:%S, %d-%m-%Y"
