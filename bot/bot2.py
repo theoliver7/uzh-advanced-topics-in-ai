@@ -1,6 +1,8 @@
 import time
+import uuid
 from typing import List
 
+from bot.util.recommander import Recommander
 from config.conf import BOT_NAME, BOT_PASS
 from speakeasypy import Speakeasy, Chatroom
 from util.cache import Cache
@@ -23,6 +25,8 @@ class Agent:
         self.graph = Graph()
         self.analyser = QuestionAnalyser()
         self.cacher = Cache()
+        self.current_user = str(uuid.uuid4())[:8]
+        self.recommander = Recommander()
         print("---READY FOR OPERATION---")
 
     def listen(self):
@@ -47,21 +51,25 @@ class Agent:
                         print("Cache Hit!")
                         response =  self.cacher.cache[message.message]
                     else:
-                        movie_titles = self.analyser.get_movie_title(message.message)
-                        movie_data = self.graph.get_film_info(movie_titles)
-                        if movie_data:
-                            response = self.llm.ask_about_movies(question=message.message, data=movie_data)
+                        if "{" in message.message or "}" in message.message:
+                            trimmed_message = message.message.strip()
+                            self.recommander.submit_entry(self.current_user, trimmed_message)
+                            recommandations = ''.join(self.recommander.get_neighbors())
+                            self._repond(message, recommandations)
+                        elif "best recommandations" in message.message:
+                            room.post_messages("")
+                            room.mark_as_processed(message)
+                            self._repond(message, "what is your rating ? respect this format {'Inception': 5}")
                         else:
-                            response = self.llm.ask_no_data(message.message)
-                        if response != "error":
-                            self.cacher.cache_message(message.message, response)
-                    print("POSTING RESPONE:",response)
-
-                    # Send a message to the corresponding chat room using the post_messages method of the room object.
-                    room.post_messages(response)
-
-                    # Mark the message as processed, so it will be filtered out when retrieving new messages.
-                    room.mark_as_processed(message)
+                            movie_titles = self.analyser.get_movie_title(message.message)
+                            movie_data = self.graph.get_film_info(movie_titles)
+                            if movie_data:
+                                response = self.llm.ask_about_movies(question=message.message, data=movie_data)
+                            else:
+                                response = self.llm.ask_no_data(message.message)
+                            if response != "error":
+                                self.cacher.cache_message(message.message, response)
+                            self._repond(message, response, room)
 
                 # Retrieve reactions from this chat room.
                 # If only_new=True, it filters out reactions that have already been marked as processed.
@@ -73,6 +81,13 @@ class Agent:
                     room.mark_as_processed(reaction)
 
             time.sleep(Agent.LISTEN_FREQUENCY_IN_SECS)
+
+    def _repond(self, message, response, room):
+        print("POSTING RESPONE:", response)
+        # Send a message to the corresponding chat room using the post_messages method of the room object.
+        room.post_messages(response)
+        # Mark the message as processed, so it will be filtered out when retrieving new messages.
+        room.mark_as_processed(message)
 
     @staticmethod
     def get_time():
