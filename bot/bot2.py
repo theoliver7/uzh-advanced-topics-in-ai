@@ -55,12 +55,8 @@ class Agent:
                         response =  self.cacher.cache[message.message]
                     else:
                         if "recommend" in message.message.lower() or ("{" in message.message and "}" in message.message):
-                            trimmed_message = message.message.strip()
-                            self.recommender.submit_entry(self.current_user, trimmed_message)
                             recommendations = '_'.join(self.recommender.get_neighbors())
                             self._repond(message, recommendations)
-                        elif "best recommendations" in message.message:
-                            self._repond(message, "what is your rating ? respect this format {'Inception': 5}")
                         else:
                             movie_titles = self.analyser.get_movie_title(message.message)
                             movie_data = self.graph.get_film_info(movie_titles)
