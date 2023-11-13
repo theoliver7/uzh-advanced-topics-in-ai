@@ -54,7 +54,7 @@ class Agent:
                         print("Cache Hit!")
                         response =  self.cacher.cache[message.message]
                     else:
-                        if "{" in message.message and "}" in message.message:
+                        if "recommend" in message.message or ("{" in message.message and "}" in message.message):
                             trimmed_message = message.message.strip()
                             self.recommender.submit_entry(self.current_user, trimmed_message)
                             recommendations = '_'.join(self.recommender.get_neighbors())
