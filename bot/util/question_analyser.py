@@ -12,8 +12,8 @@ class QuestionAnalyser:
         with open(FILM_PICKLE_PATH, 'rb') as f:
             self.film_dict = pickle.load(f)
         self.movie_titles = list(self.film_dict.keys())
-        self.tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-large-cased-finetuned-conll03-english")
-        self.model = AutoModelForTokenClassification.from_pretrained("dbmdz/bert-large-cased-finetuned-conll03-english")
+        self.tokenizer = AutoTokenizer.from_pretrained("dslim/bert-large-NER")
+        self.model = AutoModelForTokenClassification.from_pretrained("dslim/bert-large-NER")
 
     def get_movie_title(self,query):
         p_entities, m_entities = self.get_entities(query)
@@ -24,14 +24,15 @@ class QuestionAnalyser:
 
     def do_fuzz_search(self,entities):
         # Use fuzzywuzzy to find the closest match in your dictionary to the user query
-        best_match = process.extract(entities, self.movie_titles, processor=utils.default_process,limit=1)
+
+        best_match = process.extract(entities, self.movie_titles ,scorer=fuzz.ratio,processor=utils.default_process,limit=1)
 
         # best_match is a tuple containing the best matching movie title and a score
         # matching_movie_title, score = best_match
         matched_movies = []
         for movie in best_match:
             print("FUZZYWUZZY results:", movie)
-            if int(movie[1]) > 50:
+            if int(movie[1]) > 60:
                 matched_movies.append(movie[0])
         return matched_movies
 

@@ -17,29 +17,32 @@ class LLM:
             n_gpu_layers=gpu_layers,
             n_batch=n_batch,
             n_ctx=1524,
-            verbose=True,  # Verbose is required to pass to the callback manager
+            max_tokens=250,
         )
+        self.llm.client.verbose = False
 
-        film_template = """You are a helpful chatbot,You are a professional in Movies. 
-        Answer the question with below information,if the 'node label' does not match the question use your knowledge, Always answer in a sentence: 
-        {question}
-        Information: 
+        film_template = """You are a knowledgeable chatbot specializing in movies. Your task is to provide accurate,concise and short(1-2 sentences) answers about films. When presented with a question, use the provided information to formulate your response. If the information available does not fully address the question, supplement it with your own knowledge about movies. In cases where the question is unrelated to the world of movies, gently remind the user to focus their inquiries on movie-related topics. 
+        ONLY ANSWER THIS Question: {question}
+        
+        Provided Information:
         {movie_1}
         _________
-        Answer: """
+        
+        Answer:
+        """
 
-        self.film_prompt = PromptTemplate(template=film_template, input_variables=["question", "movie_1", "movie_2"])
-        empty_template = """You are a helpful chatbot,You are a professional in Movies. Answer the question with your knowledge, Always answer in a sentence: 
-        {question}
-        _________
-        Answer: """
+        self.film_prompt = PromptTemplate(template=film_template, input_variables=["question", "movie_1"])
+        empty_template = """You are a knowledgeable chatbot specializing in movies. Your task is to provide accurate,concise and short(1-2 sentences) answers about films. In cases where the question is unrelated to the world of movies, gently remind the user to focus their inquiries on movie-related topics.
+        ONLY ANSWER THIS Question: {question}
+        Answer:"""
 
         self.empty_prompt = PromptTemplate(template=empty_template, input_variables=["question"])
 
     def ask_about_movies(self, question, data):
         llm_chain = LLMChain(prompt=self.film_prompt, llm=self.llm)
         try:
-            output = llm_chain.run({"question":question, "movie_1":self.convert_to_string(data[0]),"movie_2":"No Info"})
+            # Truncate information because of limited context size
+            output = llm_chain.run({"question":question, "movie_1":self.convert_to_string(data[0])[:4200]})
         except ValueError:
             print("ERROR VALUE error")
             output = "error"
@@ -60,4 +63,6 @@ class LLM:
         result_string = '\n'.join(key_value_strings)
         result_strings.append(result_string)
         result = '\n'.join(result_strings)
+        # print(result)
+
         return result

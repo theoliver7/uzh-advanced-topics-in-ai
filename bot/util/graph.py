@@ -20,9 +20,10 @@ class Graph:
             PREFIX wd: <http://www.wikidata.org/entity/>
             PREFIX wdt: <http://www.wikidata.org/prop/direct/>
             PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-
+            
             SELECT ?predicate ?predicateLabel ?object ?objectLabel WHERE {{
               {0} ?predicate ?object .
+              FILTER(?predicate NOT IN (wdt:P5021, wdt:P8889, wdt:P8874, wdt:P5970, wdt:P3650, wdt:P3306, wdt:P2747,wdt:P2629,wdt:P6658, wdt:P3216, wdt:P3216, wdt:P2758, wdt:P3402, wdt:P2756, wdt:P4437, wdt:P3428, wdt:P2684, wdt:P2363, wdt:P2637, wdt:P3834))
               OPTIONAL {{ ?predicate rdfs:label ?predicateLabel . FILTER(LANG(?predicateLabel) = "en") }}
               OPTIONAL {{ ?object rdfs:label ?objectLabel . FILTER(LANG(?objectLabel) = "en") }}
             }}
@@ -90,5 +91,4 @@ class Graph:
                         add_value("tag", str(row[2]))
 
                 data.append(film_info)
-        print(data)
         return data
