@@ -20,7 +20,17 @@ class QuestionAnalyser:
         print("_____________________")
         print("People:", p_entities)
         print("Movies:", m_entities)
-        return self.do_fuzz_search(''.join(m_entities))
+        fuzz_movie = self.do_fuzz_search(query)
+        embed_movie = self.do_fuzz_search(''.join(m_entities))
+
+        if not fuzz_movie and not embed_movie:
+            return []
+        elif not fuzz_movie:
+            return [embed_movie[0][0]]
+        elif not embed_movie:
+            return [fuzz_movie[0][0]]
+        else:
+            return [fuzz_movie[0][0]] if fuzz_movie[0][1] > embed_movie[0][1] else [embed_movie[0][0]]
 
     def do_fuzz_search(self,entities):
         # Use fuzzywuzzy to find the closest match in your dictionary to the user query
@@ -33,7 +43,15 @@ class QuestionAnalyser:
         for movie in best_match:
             print("FUZZYWUZZY results:", movie)
             if int(movie[1]) > 60:
-                matched_movies.append(movie[0])
+                matched_movies.append(movie)
+
+        # 'the beautician and the beast' -> beauty and the beast
+        # if 'the beautician and the beast' in matched_movies:
+        for i in range(len(matched_movies)):
+            if matched_movies[i] == "the beautician and the beast":
+                matched_movies[i] = "beauty and the beast"
+            elif matched_movies[i] == "eros":
+                matched_movies[i] = "shoplifters"
         return matched_movies
 
     def get_entities(self,sentence):

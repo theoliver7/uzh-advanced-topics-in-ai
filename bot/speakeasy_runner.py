@@ -33,7 +33,7 @@ class Agent:
             for room in rooms:
                 if not room.initiated:
                     # send a welcome message if room is not initiated
-                    room.post_messages(f'Hello! This is a welcome message from {room.my_alias}.')
+                    room.post_messages(f'Hello! This is Francis your helpful movie chatbot. Ask away!.')
                     room.initiated = True
                 # Retrieve messages from this chat room.
                 # If only_partner=True, it filters out messages sent by the current bot.

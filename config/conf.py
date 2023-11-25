@@ -4,5 +4,5 @@ FILES_PATH: str = "/home/oliver/dev/uzh/atai_bot/dataset"
 DEFAULT_MODE: str = "TEXT_GENERATION"
 
 LLMA_MODEL_PATH: str = "/home/oliver/dev/uzh/atai_bot/mistral-7b-openorca.Q4_0.gguf"
-HIGH_PRIO_PICKLE_PATH: str = "/home/oliver/dev/uzh/atai_bot/dataset/graph-high-prio.pickle"
+HIGH_PRIO_PICKLE_PATH: str = "/home/oliver/dev/uzh/atai_bot/dataset/updated_dataset.pickle"
 FILM_PICKLE_PATH: str = "/home/oliver/dev/uzh/atai_bot/dataset/film_dict.pickle"
