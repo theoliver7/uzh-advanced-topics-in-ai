@@ -2,7 +2,7 @@ import pickle
 
 from collections import defaultdict
 
-from config.conf import HIGH_PRIO_PICKLE_PATH, FILM_PICKLE_PATH
+from config.conf import HIGH_PRIO_PICKLE_PATH, FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
 
 
 class Graph:
@@ -14,6 +14,9 @@ class Graph:
         with open(FILM_PICKLE_PATH, 'rb') as f:
             self.movie_dict = pickle.load(f)
             print("--LOADED MOVIE DICT--")
+        with open(HUMAN_PICKLE_PATH, 'rb') as f:
+            self.human_dict = pickle.load(f)
+            print("--LOADED HUMAN DICT--")
 
     def get_film_info(self, matched_movies):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -92,3 +95,23 @@ class Graph:
 
                 data.append(film_info)
         return data
+
+    def get_imdb(self, name):
+        entity = self.human_dict.get(name)
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+        PREFIX ddis: <http://ddis.ch/atai/>
+        SELECT ?value
+        WHERE {{
+             {0} wdt:P345 ?value .
+        }}
+        """
+        query = query_template.format("wd:" + entity.split('/')[-1])
+        result = self.graph.query(query)
+        imdb_id = ""
+        for row in result:
+            imdb_id = str(row[0])
+
+        return imdb_id

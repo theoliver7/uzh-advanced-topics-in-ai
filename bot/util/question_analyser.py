@@ -2,9 +2,9 @@ import pickle
 import torch
 from transformers import AutoModelForTokenClassification, AutoTokenizer
 
-from rapidfuzz import fuzz, process,utils
+from rapidfuzz import fuzz, process, utils
 
-from config.conf import FILM_PICKLE_PATH
+from config.conf import FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
 
 
 class QuestionAnalyser:
@@ -12,30 +12,36 @@ class QuestionAnalyser:
         with open(FILM_PICKLE_PATH, 'rb') as f:
             self.film_dict = pickle.load(f)
         self.movie_titles = list(self.film_dict.keys())
+
+        with open(HUMAN_PICKLE_PATH, 'rb') as f:
+            self.human_dict = pickle.load(f)
+        self.names = list(self.human_dict.keys())
+
         self.tokenizer = AutoTokenizer.from_pretrained("dslim/bert-large-NER")
         self.model = AutoModelForTokenClassification.from_pretrained("dslim/bert-large-NER")
 
-    def get_movie_title(self,query):
+    def get_movie_title(self, query):
         p_entities, m_entities = self.get_entities(query)
-        print("_____________________")
         print("People:", p_entities)
         print("Movies:", m_entities)
-        fuzz_movie = self.do_fuzz_search(query)
-        embed_movie = self.do_fuzz_search(''.join(m_entities))
+        fuzz_movie = self.do_fuzz_search(query, self.movie_titles)
+        embed_movie = self.do_fuzz_search(''.join(m_entities), self.movie_titles)
+
+        matched_names = self.do_fuzz_search(''.join(p_entities), self.names)
 
         if not fuzz_movie and not embed_movie:
-            return []
+            return [],matched_names
         elif not fuzz_movie:
-            return [embed_movie[0][0]]
+            return [embed_movie[0][0]],matched_names
         elif not embed_movie:
-            return [fuzz_movie[0][0]]
+            return [fuzz_movie[0][0]],matched_names
         else:
-            return [fuzz_movie[0][0]] if fuzz_movie[0][1] > embed_movie[0][1] else [embed_movie[0][0]]
+            return ([fuzz_movie[0][0]],matched_names) if fuzz_movie[0][1] > embed_movie[0][1] else ([embed_movie[0][0]],matched_names)
 
-    def do_fuzz_search(self,entities):
+    def do_fuzz_search(self, entities, choices):
         # Use fuzzywuzzy to find the closest match in your dictionary to the user query
 
-        best_match = process.extract(entities, self.movie_titles ,scorer=fuzz.ratio,processor=utils.default_process,limit=1)
+        best_match = process.extract(entities, choices, scorer=fuzz.ratio, processor=utils.default_process, limit=1)
 
         # best_match is a tuple containing the best matching movie title and a score
         # matching_movie_title, score = best_match
@@ -52,9 +58,11 @@ class QuestionAnalyser:
                 matched_movies[i] = "beauty and the beast"
             elif matched_movies[i] == "eros":
                 matched_movies[i] = "shoplifters"
+            elif matched_movies[i] == "the bridge":
+                matched_movies[i] = "the bridge on the river kwai"
         return matched_movies
 
-    def get_entities(self,sentence):
+    def get_entities(self, sentence):
         # Load pre-trained model and tokenizer
 
         # Tokenize the sentence and obtain model outputs
@@ -96,6 +104,3 @@ class QuestionAnalyser:
                 m_entities.append(entity)
 
         return p_entities, m_entities
-
-
-

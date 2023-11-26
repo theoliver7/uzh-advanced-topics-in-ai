@@ -49,7 +49,7 @@ class Agent:
                         response =  self.cacher.cache[message.message]
                     else:
                         response = self.bot.ask(message.message)
-                        if response != "error":
+                        if response != "Something went wrong :(. Please try again!":
                             self.cacher.cache_message(message.message, response)
                     print("POSTING RESPONE:",response)
 
