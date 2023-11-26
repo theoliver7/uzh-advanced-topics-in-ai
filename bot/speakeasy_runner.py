@@ -1,4 +1,3 @@
-import pickle
 import sys
 
 sys.path.append('/home/oliver/dev/uzh/atai_bot/bot')
@@ -44,7 +43,7 @@ class Agent:
                         f"\t- Chatroom {room.room_id} "
                         f"- new message #{message.ordinal}: '{message.message}' "
                         f"- {self.get_time()}")
-                    hit,cache_value= self.cacher.exist(message.message)
+                    hit, cache_value = self.cacher.exist(message.message)
                     if hit:
                         print("Cache Hit!")
                         response = cache_value
@@ -52,7 +51,7 @@ class Agent:
                         response = self.bot.ask(message.message)
                         if response != "Something went wrong :(. Please try again!":
                             self.cacher.cache_message(message.message, response)
-                    print("POSTING RESPONE:",response)
+                    print("POSTING RESPONE:", response)
 
                     # Send a message to the corresponding chat room using the post_messages method of the room object.
                     room.post_messages(response)
@@ -77,7 +76,5 @@ class Agent:
 
 
 if __name__ == '__main__':
-
     demo_bot = Agent(BOT_NAME, BOT_PASS)
     demo_bot.listen()
-

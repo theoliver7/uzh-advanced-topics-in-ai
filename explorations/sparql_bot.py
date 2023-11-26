@@ -12,14 +12,7 @@
                 ?obj rdfs:label ?lbl .
             }
 '''
-import os
 import pickle
-# 1 - OPTIONAL - start time when load graph database
-# 2 - PROVIDED REQUESTS DO NOT WORK (even using the assignmeent.ipynb notebook) - ASK TO TEACHER / COLLEAGUES ? 
-
-# rdflib in order to request a graph database using SPARQL
-# and do calls (queries) to this database in the code
-
 import time
 from typing import List
 
@@ -27,6 +20,11 @@ import rdflib
 
 from config.conf import BOT_NAME, BOT_PASS, FILES_PATH
 from speakeasypy import Speakeasy, Chatroom
+
+# 1 - OPTIONAL - start time when load graph database
+# 2 - PROVIDED REQUESTS DO NOT WORK (even using the assignmeent.ipynb notebook) - ASK TO TEACHER / COLLEAGUES ?
+# rdflib in order to request a graph database using SPARQL
+# and do calls (queries) to this database in the code
 
 DEFAULT_HOST_URL = 'https://speakeasy.ifi.uzh.ch'
 listen_freq = 2
@@ -43,7 +41,7 @@ SCHEMA = rdflib.Namespace('http://schema.org/')
 # and deserialize it (read a binary file and load it in memory)
 import os
 
-serialized_path= f'{FILES_PATH}ddis-movie-graph.nt.pickle'
+serialized_path = f'{FILES_PATH}ddis-movie-graph.nt.pickle'
 
 if not os.path.exists(serialized_path):
     print("parsing graph")

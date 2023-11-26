@@ -1,14 +1,14 @@
-from speakeasypy.openapi.client import Configuration
-from speakeasypy.openapi.client.apis import UserApi
-from speakeasypy.openapi.client.apis import ChatApi
-from speakeasypy.openapi.client.api_client import ApiClient
-from speakeasypy.openapi.client.models import LoginRequest
-from speakeasypy.src.chatroom import Chatroom
+import atexit
+import logging
+import time
 from typing import Dict, List
 
-import logging
-import atexit
-import time
+from speakeasypy.openapi.client import Configuration
+from speakeasypy.openapi.client.api_client import ApiClient
+from speakeasypy.openapi.client.apis import ChatApi
+from speakeasypy.openapi.client.apis import UserApi
+from speakeasypy.openapi.client.models import LoginRequest
+from speakeasypy.src.chatroom import Chatroom
 
 
 class Speakeasy:
@@ -110,6 +110,3 @@ class Speakeasy:
             return [room for room in list(self._chatrooms_dict.values()) if room.remaining_time > 0]
 
         return list(self._chatrooms_dict.values())
-
-
-

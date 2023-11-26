@@ -21,5 +21,5 @@ class Cache:
     def exist(self, query):
         for key, value in self.cache.items():
             if query.lower() in key.lower():
-                return True,value
-        return False,""
+                return True, value
+        return False, ""

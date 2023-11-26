@@ -1,8 +1,8 @@
 import pickle
-import torch
-from transformers import AutoModelForTokenClassification, AutoTokenizer
 
+import torch
 from rapidfuzz import fuzz, process, utils
+from transformers import AutoModelForTokenClassification, AutoTokenizer
 
 from config.conf import FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
 
@@ -30,13 +30,14 @@ class QuestionAnalyser:
         matched_names = self.do_fuzz_search(''.join(p_entities), self.names)
 
         if not fuzz_movie and not embed_movie:
-            return [],matched_names
+            return [], matched_names
         elif not fuzz_movie:
-            return [embed_movie[0][0]],matched_names
+            return [embed_movie[0][0]], matched_names
         elif not embed_movie:
-            return [fuzz_movie[0][0]],matched_names
+            return [fuzz_movie[0][0]], matched_names
         else:
-            return ([fuzz_movie[0][0]],matched_names) if fuzz_movie[0][1] > embed_movie[0][1] else ([embed_movie[0][0]],matched_names)
+            return ([fuzz_movie[0][0]], matched_names) if fuzz_movie[0][1] > embed_movie[0][1] else (
+            [embed_movie[0][0]], matched_names)
 
     def do_fuzz_search(self, entities, choices):
         # Use fuzzywuzzy to find the closest match in your dictionary to the user query

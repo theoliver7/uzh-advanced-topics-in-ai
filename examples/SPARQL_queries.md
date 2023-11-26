@@ -1,5 +1,7 @@
 # SPAQRL QUERIES
+
 ## Query on Jean Van Hamme
+
 ```
             prefix wdt: <http://www.wikidata.org/prop/direct/>
             prefix wd: <http://www.wikidata.org/entity/>

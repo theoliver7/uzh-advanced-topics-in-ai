@@ -1,6 +1,6 @@
-from langchain.chains import LLMChain
 from langchain.llms import LlamaCpp
 from transformers import AutoTokenizer
+
 from config.conf import LLMA_MODEL_PATH
 
 
@@ -33,7 +33,7 @@ class LLM:
     def ask_about_movies(self, question, data):
         messages = [self.system_prompt,
                     {"role": "system", "content": self.convert_to_string(data[0])[:4200]},
-                    {"role": "user", "content": question} ]
+                    {"role": "user", "content": question}]
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
         try:
@@ -45,7 +45,7 @@ class LLM:
 
     def ask_no_data(self, question):
         messages = [self.system_prompt_no_data,
-                    {"role": "user", "content": question} ]
+                    {"role": "user", "content": question}]
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
         try:

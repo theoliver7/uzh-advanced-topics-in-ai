@@ -1,8 +1,8 @@
 import logging
 import time
-
 from datetime import datetime
 from typing import List, Union
+
 from speakeasypy.openapi.client.models import RestChatMessage, ChatMessageReaction
 
 

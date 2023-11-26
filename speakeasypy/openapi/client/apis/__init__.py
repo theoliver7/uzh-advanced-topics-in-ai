@@ -1,4 +1,3 @@
-
 # flake8: noqa
 
 # Import all APIs into this package.
@@ -14,5 +13,3 @@
 #   sys.setrecursionlimit(n)
 
 # Import APIs into API package:
-from speakeasypy.openapi.client.api.chat_api import ChatApi
-from speakeasypy.openapi.client.api.user_api import UserApi
