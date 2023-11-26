@@ -51,7 +51,7 @@ class Bot:
 
             # Check the flag to set the response if no image was found
             if not image_found:
-                response = "Mhh looks like I didn't find a picture"
+                responese = "Mhh looks like I didn't find a picture"
         else:
             # CROWD SOURCING
             crowd_disclaimer = None

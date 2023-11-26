@@ -1,3 +1,4 @@
+import pickle
 import sys
 
 sys.path.append('/home/oliver/dev/uzh/atai_bot/bot')
@@ -43,10 +44,10 @@ class Agent:
                         f"\t- Chatroom {room.room_id} "
                         f"- new message #{message.ordinal}: '{message.message}' "
                         f"- {self.get_time()}")
-
-                    if message.message in self.cacher.cache:
+                    hit,cache_value= self.cacher.exist(message.message)
+                    if hit:
                         print("Cache Hit!")
-                        response =  self.cacher.cache[message.message]
+                        response = cache_value
                     else:
                         response = self.bot.ask(message.message)
                         if response != "Something went wrong :(. Please try again!":
