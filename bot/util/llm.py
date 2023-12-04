@@ -7,7 +7,7 @@ from config.conf import LLMA_MODEL_PATH
 class LLM:
 
     def __init__(self):
-        gpu_layers = 22  # Change this value based on your model and your GPU VRAM pool.
+        gpu_layers = 21  # Change this value based on your model and your GPU VRAM pool.
         n_batch = 762  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
         # Callbacks support token-wise streaming
         # Make sure the model path is correct for your system!
@@ -16,7 +16,7 @@ class LLM:
             n_gpu_layers=gpu_layers,
             n_batch=n_batch,
             n_ctx=1524,
-            max_tokens=100,
+            max_tokens=250,
         )
         self.llm.client.verbose = False
 

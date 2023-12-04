@@ -48,7 +48,7 @@ class QuestionAnalyser:
         # matching_movie_title, score = best_match
         matched_movies = []
         for movie in best_match:
-            print("FUZZYWUZZY results:", movie)
+            print("FUZZY SEARCH results:", movie)
             if int(movie[1]) > 60:
                 matched_movies.append(movie)
 

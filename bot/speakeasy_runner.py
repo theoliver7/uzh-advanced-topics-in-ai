@@ -1,7 +1,9 @@
 import sys
 
-sys.path.append('/home/oliver/dev/uzh/atai_bot/bot')
-sys.path.append('/home/oliver/dev/uzh/atai_bot')
+sys.path.insert(1, '/home/oliver/dev/uzh/atai_bot')
+sys.path.insert(0, '/home/oliver/dev/uzh/atai_bot/bot')
+sys.path.insert(2, '/home/oliver/dev/uzh/atai_bot')
+# sys.path.append('/home/oliver/dev/uzh/atai_bot/bot')
 
 from bot import Bot
 
@@ -10,6 +12,7 @@ from typing import List
 
 from config.conf import BOT_NAME, BOT_PASS
 from speakeasypy import Speakeasy, Chatroom
+import speakeasypy
 from util.cache import Cache
 
 
@@ -33,7 +36,7 @@ class Agent:
             for room in rooms:
                 if not room.initiated:
                     # send a welcome message if room is not initiated
-                    room.post_messages(f'Hello! This is Francis your helpful movie chatbot. Ask away!.')
+                    room.post_messages(f'Hello! This is {room.my_alias} your helpful movie chatbot. Ask away!.')
                     room.initiated = True
                 # Retrieve messages from this chat room.
                 # If only_partner=True, it filters out messages sent by the current bot.

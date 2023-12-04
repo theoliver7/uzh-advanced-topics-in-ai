@@ -3,8 +3,10 @@ import time
 from datetime import datetime
 from typing import List, Union
 
-from speakeasypy.openapi.client.models import RestChatMessage, ChatMessageReaction
+from speakeasypy.openapi.client.model.chat_message_reaction import ChatMessageReaction
+from speakeasypy.openapi.client.model.rest_chat_message import RestChatMessage
 
+# from speakeasypy.openapi.client.models import RestChatMessage, ChatMessageReaction
 
 class Chatroom:
     def __init__(self,

@@ -4,10 +4,11 @@ import time
 from typing import Dict, List
 
 from speakeasypy.openapi.client import Configuration
+from speakeasypy.openapi.client.api.chat_api import ChatApi
+from speakeasypy.openapi.client.api.user_api import UserApi
 from speakeasypy.openapi.client.api_client import ApiClient
-from speakeasypy.openapi.client.apis import ChatApi
-from speakeasypy.openapi.client.apis import UserApi
-from speakeasypy.openapi.client.models import LoginRequest
+from speakeasypy.openapi.client.model.login_request import LoginRequest
+
 from speakeasypy.src.chatroom import Chatroom
 
 
