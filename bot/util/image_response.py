@@ -1,6 +1,6 @@
 import pandas
 
-from config.conf import MOVIE_NET_INDEX
+from conf import MOVIE_NET_INDEX
 
 
 class ImageResponseGenerator:

@@ -1,8 +1,7 @@
 import pickle
 from collections import defaultdict
 
-from config.conf import HIGH_PRIO_PICKLE_PATH, FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
-
+from conf import HIGH_PRIO_PICKLE_PATH, FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
 
 class Graph:
     def __init__(self):

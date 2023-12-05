@@ -1,7 +1,7 @@
 from langchain.llms import LlamaCpp
 from transformers import AutoTokenizer
 
-from config.conf import LLMA_MODEL_PATH
+from conf import LLMA_MODEL_PATH
 
 
 class LLM:

@@ -3,10 +3,11 @@ import sys
 
 import pandas as pd
 
-from config.conf import CROWD_SOURCING_CSV
+from conf import CROWD_SOURCING_CSV, BOT_BASE_PATH, BOT_BOT_PATH
 
-sys.path.append('/home/oliver/dev/uzh/atai_bot/bot')
-sys.path.append('/home/oliver/dev/uzh/atai_bot')
+sys.path.append(BOT_BOT_PATH)
+sys.path.append(BOT_BASE_PATH)
+
 import re
 import time
 from util.graph import Graph

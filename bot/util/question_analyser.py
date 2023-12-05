@@ -4,7 +4,7 @@ import torch
 from rapidfuzz import fuzz, process, utils
 from transformers import AutoModelForTokenClassification, AutoTokenizer
 
-from config.conf import FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
+from conf import FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
 
 
 class QuestionAnalyser:
