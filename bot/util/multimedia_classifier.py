@@ -12,7 +12,12 @@ class MultimediaClassifier:
         ]
 
     def is_multimedia_request(self, sentence):
+
+        print(f"is_multimedia_request - sentence {sentence}")
+
         for keyword in self.image_keywords:
-            if re.search(keyword, sentence, re.IGNORECASE):
+            if re.search(keyword, sentence, re.IGNORECASE) or keyword in sentence:
+                print("is_multimedia_request - word finded")
                 return True
+        print("is_multimedia_request - no word finded")
         return False

@@ -2,6 +2,9 @@ import pickle
 from collections import defaultdict
 
 from conf import HIGH_PRIO_PICKLE_PATH, FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
+import re
+from rdflib import URIRef
+
 
 class Graph:
     def __init__(self):
@@ -96,20 +99,41 @@ class Graph:
 
     def get_imdb(self, name):
         entity = self.human_dict.get(name)
+
+        print(entity)
+
+        print('IMDB result')
+
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX wd: <http://www.wikidata.org/entity/>
-        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-        PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-        PREFIX ddis: <http://ddis.ch/atai/>
-        SELECT ?value
-        WHERE {{
-             {0} wdt:P345 ?value .
-        }}
+                PREFIX wd: <http://www.wikidata.org/entity/>
+                PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+                PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                PREFIX ddis: <http://ddis.ch/atai/>
+                SELECT ?value
+                WHERE {{
+                     {0} wdt:P345 ?value .
+                }}
+                """
+
         """
         query = query_template.format("wd:" + entity.split('/')[-1])
         result = self.graph.query(query)
+        
         imdb_id = ""
         for row in result:
-            imdb_id = str(row[0])
+            imdb_id = row[0]
+        """
 
-        return imdb_id
+        wiki_data_url_part = 'Q229211'
+        split_string = entity.split('/')
+
+        print('split_string')
+        print(split_string)
+
+        if len(split_string) == 5:
+            wiki_data_url_part = split_string[-1]
+            print("Extracted Wikidata ID:", wiki_data_url_part)
+        else:
+            print("Unable to extract Wikidata ID from the given string.")
+
+        return wiki_data_url_part

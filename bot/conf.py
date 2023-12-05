@@ -12,3 +12,9 @@ HUMAN_PICKLE_PATH: str = f"{BOT_BASE_PATH}dataset/pickles/human_dict.pickle"
 CROWD_SOURCING_CSV: str = f"{BOT_BASE_PATH}dataset/pickles/crowd-sourcing-output.csv"
 MOVIE_NET_INDEX: str = f"{BOT_BASE_PATH}dataset/pickles/movienet_index.pickle"
 CACHE_PICKLE_PATH: str = f"{BOT_BASE_PATH}dataset/pickles/cache.pickle"
+
+# in real life we are using a key vault
+OMDB_API_KEY: str = '6aee193a'
+
+#TEST data
+#https://www.wikidata.org/wiki/Q228893 , Julie Kavner

@@ -31,18 +31,21 @@ class Bot:
         print("---READY FOR OPERATION---")
 
     def ask(self, message):
-        # try:
-        print("___________________________________________________________________________________________________")
-        print("Question:", message)
+        print("___________________________________________________________________________________________________\nQuestion:", message)
         start = time.perf_counter()
         movie_titles, names = self.analyser.get_movie_title(message)
 
         if self.multimedia_classifier.is_multimedia_request(message):
             print("Handling question as Multimedia")
             image_found = False
-
-            if len(names) > 0:
+            print(f"names_length {len(names)}")
+            if len(names) > 0 or len(movie_titles) > 0:
                 names = names[0][0]
+
+                print("Multimedia - MOVIES_TITLES, NAMES DEBUG")
+                print(movie_titles)
+                print(names)
+
                 imdb_id = self.graph.get_imdb(names)
                 image = self.image_responder.generate_image_response(imdb_id)
 
