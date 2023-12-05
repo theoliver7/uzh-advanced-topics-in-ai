@@ -47,12 +47,13 @@ class Bot:
                 image = self.image_responder.generate_image_response(imdb_id)
 
                 if image != 0:
-                    response = "Here is a Picture of " + names + " image:" + image
+                    response = f"Here is a Picture of {names} image: {image}"
                     image_found = True
 
             # Check the flag to set the response if no image was found
             if not image_found:
-                responese = "Mhh looks like I didn't find a picture"
+                response = "Mhh looks like I didn't find a picture"
+            return response
         else:
             # CROWD SOURCING
             crowd_disclaimer = None
@@ -83,7 +84,4 @@ class Bot:
         end = time.perf_counter()
         self.times.append(end - start)
         print(f"Took: {end - start} seconds,avg: {statistics.mean(self.times)}")
-        # except Exception as e:
-        #     response = "Something went wrong :(. Please try again!"
-        #     print(e)
         return response
