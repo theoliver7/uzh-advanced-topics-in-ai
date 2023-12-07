@@ -39,19 +39,29 @@ class Bot:
             print("Handling question as Multimedia")
             image_found = False
             print(f"names_length {len(names)}")
-            if len(names) > 0 or len(movie_titles) > 0:
-                names = names[0][0]
 
-                print("Multimedia - MOVIES_TITLES, NAMES DEBUG")
-                print(movie_titles)
-                print(names)
+            name_case = len(names) > 0
+            movie_case = len(movie_titles) > 0
+            if name_case or movie_case:
+                if name_case:
+                    names = names[0][0]
+                    print("Multimedia - NAMES DEBUG")
+                    print(names)
+                    imdb_id = self.graph.get_imdb(names)
+                    image = self.image_responder.generate_image_response(imdb_id)
+                    response = f"Here is a Picture of {names} image:{image}"
 
-                imdb_id = self.graph.get_imdb(names)
-                image = self.image_responder.generate_image_response(imdb_id)
+
+                if movie_case:
+                    movie_titles = movie_titles[0]
+                    print("Multimedia - MOVIES DEBUG")
+                    print(movie_titles)
+                    imdb_id = self.graph.get_imdb(movie_titles, True)
+                    image = self.image_responder.generate_image_response(imdb_id, True)
+                    response = f"Here is a Picture of {movie_titles} image:{image}"
 
                 if image != 0:
                     # {image}
-                    response = f"Here is a Picture of {names} image:  https://files.ifi.uzh.ch/ddis/teaching/2023/ATAI/dataset/movienet/images/{image}.jpg"
                     image_found = True
 
             # Check the flag to set the response if no image was found

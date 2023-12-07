@@ -4,6 +4,7 @@ from collections import defaultdict
 from conf import HIGH_PRIO_PICKLE_PATH, FILM_PICKLE_PATH, HUMAN_PICKLE_PATH
 import re
 from rdflib import URIRef
+import pandas as pd
 
 
 class Graph:
@@ -20,6 +21,10 @@ class Graph:
             print("--LOADED HUMAN DICT--")
 
     def get_film_info(self, matched_movies):
+
+        print('matched_movies')
+        print(matched_movies)
+
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX wd: <http://www.wikidata.org/entity/>
             PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -63,8 +68,13 @@ class Graph:
         for movie in matched_movies:
             entity = self.movie_dict[movie]
             if isinstance(entity, list):
+                print('facing list')
+
                 query = reduced_info_template.format(' '.join(entity))
                 result = self.graph.query(query)
+
+                print('result graph dict query')
+                print(result)
 
                 # Convert to dictionary
                 def add_value(entity_key, key, value):
@@ -79,8 +89,13 @@ class Graph:
                         add_value(str(entity_key.rsplit('/', 1)[-1]) + str(movie_label), str(label), str(obj))
                     add_value(str(entity_key.rsplit('/', 1)[-1]) + str(movie_label), str(label), str(value))
             else:
+                print('facing item'
+                      '')
                 query = query_template.format(entity)
                 result = self.graph.query(query)
+
+                print('result graph dict query')
+                print(result)
 
                 def add_value(key, value):
                     film_info[key].append(value)
@@ -95,47 +110,45 @@ class Graph:
                         add_value("tag", str(row[2]))
 
                 data.append(film_info)
+
+        print('result_data')
+        print(data)
+
         return data
 
-    def get_imdb(self, name):
-        entity = self.human_dict.get(name)
+    def get_imdb(self, name, is_movie=False):
+        print(f"is_movie {is_movie}, name - {name}")
 
-        print(entity)
-        print('IMDB result')
+        if not is_movie:
+            entity = self.human_dict.get(name)
+        else:
+            entity = self.movie_dict.get(name)
 
-        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-                PREFIX wd: <http://www.wikidata.org/entity/>
-                PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-                PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-                PREFIX ddis: <http://ddis.ch/atai/>
-                SELECT ?value
-                WHERE {{
-                     {0} wdt:P345 ?value .
-                }}
-                """
-
-        query = query_template.format("wd:" + entity.split('/')[-1])
-        result = self.graph.query(query)
+        print(f'entity {entity}, IMDB result')
 
         imdb_id = ""
-        for row in result:
-            imdb_id = row[0]
-
-        """
-        wiki_data_url_part = 'Q229211'
-        split_string = entity.split('/')
-
-        print('split_string')
-        print(split_string)
-
-        if len(split_string) == 5:
-            wiki_data_url_part = split_string[-1]
-            print("Extracted Wikidata ID:", wiki_data_url_part)
+        if not is_movie:
+            query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX wd: <http://www.wikidata.org/entity/>
+                    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+                    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                    PREFIX ddis: <http://ddis.ch/atai/>
+                    SELECT ?value
+                    WHERE {{
+                         {0} wdt:P345 ?value .
+                    }}
+                    """
+            query = query_template.format("wd:" + entity.split('/')[-1])
+            result = self.graph.query(query)
+            for row in result:
+                imdb_id = row[0]
         else:
-            print("Unable to extract Wikidata ID from the given string.")
-
-        return wiki_data_url_part
-        """
+            # TO BE DYNAMIC
+            #matched_movies=['mad max: fury road']
+            matched_movies = [name]
+            data_films = self.get_film_info(matched_movies)
+            if len(data_films) > 0:
+                imdb_id = data_films[0]['IMDb ID'][0]
 
         print(f"obtained imdb_id {imdb_id}")
 

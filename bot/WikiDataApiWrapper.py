@@ -19,6 +19,8 @@ class WikiDataApiWrapper:
         # Check if the request was successful and retrieve the IMDb ID if available
         if response.status_code == 200:
             data = response.json()
+            print('data')
+            print(data)
             if "P345" in data["claims"]:
                 imdb_id = data["claims"]["P345"][0]["mainsnak"]["datavalue"]["value"]
                 print(f"The IMDb ID for {wikidata_id} is {imdb_id}")
