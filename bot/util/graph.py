@@ -101,7 +101,6 @@ class Graph:
         entity = self.human_dict.get(name)
 
         print(entity)
-
         print('IMDB result')
 
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -115,15 +114,14 @@ class Graph:
                 }}
                 """
 
-        """
         query = query_template.format("wd:" + entity.split('/')[-1])
         result = self.graph.query(query)
-        
+
         imdb_id = ""
         for row in result:
             imdb_id = row[0]
-        """
 
+        """
         wiki_data_url_part = 'Q229211'
         split_string = entity.split('/')
 
@@ -137,3 +135,9 @@ class Graph:
             print("Unable to extract Wikidata ID from the given string.")
 
         return wiki_data_url_part
+        """
+
+        print(f"obtained imdb_id {imdb_id}")
+
+        return imdb_id
+

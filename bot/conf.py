@@ -1,6 +1,6 @@
 BOT_NAME: str = 'blister-presto-candy_bot'
 BOT_PASS: str = '3820tnfOnR7V0Q'
-BOT_BASE_PATH: str = "/home/<USER>/repos/DAVID/uzh-advanced-topics-in-ai/"
+BOT_BASE_PATH: str = "/home/ledavid/repos/DAVID/uzh-advanced-topics-in-ai/"
 BOT_BOT_PATH: str = f"{BOT_BASE_PATH}bot"
 FILES_PATH: str = f"{BOT_BASE_PATH}dataset"
 DEFAULT_MODE: str = "TEXT_GENERATION"

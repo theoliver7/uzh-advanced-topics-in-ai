@@ -50,7 +50,8 @@ class Bot:
                 image = self.image_responder.generate_image_response(imdb_id)
 
                 if image != 0:
-                    response = f"Here is a Picture of {names} image: {image}"
+                    # {image}
+                    response = f"Here is a Picture of {names} image:  https://files.ifi.uzh.ch/ddis/teaching/2023/ATAI/dataset/movienet/images/{image}.jpg"
                     image_found = True
 
             # Check the flag to set the response if no image was found
@@ -81,7 +82,7 @@ class Bot:
             response = split_pattern.split(response)[0]
 
             if crowd_disclaimer:
-                response = response + "\n" + crowd_disclaimer
+                response = f"{response} \n {crowd_disclaimer}"
 
         print("POSTING RESPONE:", response)
         end = time.perf_counter()
