@@ -18,7 +18,7 @@ from typing import List
 
 import rdflib
 
-from config.conf import BOT_NAME, BOT_PASS, FILES_PATH
+from bot.conf import BOT_NAME, BOT_PASS, FILES_PATH
 from speakeasypy import Speakeasy, Chatroom
 
 # 1 - OPTIONAL - start time when load graph database

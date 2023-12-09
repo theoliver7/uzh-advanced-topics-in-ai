@@ -3,10 +3,11 @@ import sys
 
 import pandas as pd
 
-from config.conf import CROWD_SOURCING_CSV
+from conf import CROWD_SOURCING_CSV, BOT_BASE_PATH, BOT_BOT_PATH
 
-sys.path.append('/home/oliver/dev/uzh/atai_bot/bot')
-sys.path.append('/home/oliver/dev/uzh/atai_bot')
+sys.path.append(BOT_BOT_PATH)
+sys.path.append(BOT_BASE_PATH)
+
 import re
 import time
 from util.graph import Graph
@@ -30,28 +31,43 @@ class Bot:
         print("---READY FOR OPERATION---")
 
     def ask(self, message):
-        # try:
-        print("___________________________________________________________________________________________________")
-        print("Question:", message)
+        print("___________________________________________________________________________________________________\nQuestion:", message)
         start = time.perf_counter()
         movie_titles, names = self.analyser.get_movie_title(message)
 
         if self.multimedia_classifier.is_multimedia_request(message):
             print("Handling question as Multimedia")
             image_found = False
+            print(f"names_length {len(names)}")
 
-            if len(names) > 0:
-                names = names[0][0]
-                imdb_id = self.graph.get_imdb(names)
-                image = self.image_responder.generate_image_response(imdb_id)
+            name_case = len(names) > 0
+            movie_case = len(movie_titles) > 0
+            if name_case or movie_case:
+                if name_case:
+                    names = names[0][0]
+                    print("Multimedia - NAMES DEBUG")
+                    print(names)
+                    imdb_id = self.graph.get_imdb(names)
+                    image = self.image_responder.generate_image_response(imdb_id)
+                    response = f"Here is a Picture of {names} image:{image}"
+
+
+                if movie_case:
+                    movie_titles = movie_titles[0]
+                    print("Multimedia - MOVIES DEBUG")
+                    print(movie_titles)
+                    imdb_id = self.graph.get_imdb(movie_titles, True)
+                    image = self.image_responder.generate_image_response(imdb_id, True)
+                    response = f"Here is a Picture of {movie_titles} image:{image}"
 
                 if image != 0:
-                    response = "Here is a Picture of " + names + " image:" + image
+                    # {image}
                     image_found = True
 
             # Check the flag to set the response if no image was found
             if not image_found:
-                responese = "Mhh looks like I didn't find a picture"
+                response = "Mhh looks like I didn't find a picture"
+            return response
         else:
             # CROWD SOURCING
             crowd_disclaimer = None
@@ -76,13 +92,10 @@ class Bot:
             response = split_pattern.split(response)[0]
 
             if crowd_disclaimer:
-                response = response + "\n" + crowd_disclaimer
+                response = f"{response} \n {crowd_disclaimer}"
 
         print("POSTING RESPONE:", response)
         end = time.perf_counter()
         self.times.append(end - start)
         print(f"Took: {end - start} seconds,avg: {statistics.mean(self.times)}")
-        # except Exception as e:
-        #     response = "Something went wrong :(. Please try again!"
-        #     print(e)
         return response

@@ -1,0 +1,6 @@
+1/ Oke so you just need to check if these keywords are enough to detect multimedia questions in this file:
+https://github.com/theoliver7/uzh-advanced-topics-in-ai/blob/main/bot/util/multimedia_classifier.py
+-->
+1.1/ I add some synonyms to the word list
+
+and in bot.py extend the code in the if self.multimedia_classifier.is_multimedia_request(message): So that I can also ask "Show me an image of the movie Titanic"

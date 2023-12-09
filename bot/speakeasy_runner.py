@@ -1,16 +1,16 @@
 import sys
 
-sys.path.insert(1, '/home/oliver/dev/uzh/atai_bot')
-sys.path.insert(0, '/home/oliver/dev/uzh/atai_bot/bot')
-sys.path.insert(2, '/home/oliver/dev/uzh/atai_bot')
-# sys.path.append('/home/oliver/dev/uzh/atai_bot/bot')
+from conf import BOT_BOT_PATH, BOT_BASE_PATH, BOT_NAME, BOT_PASS
+
+sys.path.insert(1, BOT_BASE_PATH)
+sys.path.insert(0, BOT_BOT_PATH)
+sys.path.insert(2, BOT_BASE_PATH)
 
 from bot import Bot
 
 import time
 from typing import List
 
-from config.conf import BOT_NAME, BOT_PASS
 from speakeasypy import Speakeasy, Chatroom
 import speakeasypy
 from util.cache import Cache

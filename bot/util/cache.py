@@ -1,7 +1,7 @@
 import pickle
 from collections import OrderedDict
 
-from config.conf import CACHE_PICKLE_PATH
+from conf import CACHE_PICKLE_PATH
 
 
 class Cache:
