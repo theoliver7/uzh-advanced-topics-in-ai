@@ -28,6 +28,9 @@ class QuestionAnalyser:
         embed_movie = self.do_fuzz_search(''.join(m_entities), self.movie_titles)
 
         matched_names = self.do_fuzz_search(''.join(p_entities), self.names)
+        alt_names = self.do_fuzz_search(query, self.names, fuzz.WRatio)
+        if len(matched_names) == 0 and alt_names[0][1]>86:
+            matched_names = alt_names
 
         if not fuzz_movie and not embed_movie:
             return [], matched_names
@@ -39,10 +42,10 @@ class QuestionAnalyser:
             return ([fuzz_movie[0][0]], matched_names) if fuzz_movie[0][1] > embed_movie[0][1] else (
             [embed_movie[0][0]], matched_names)
 
-    def do_fuzz_search(self, entities, choices):
+    def do_fuzz_search(self, entities, choices,scorer=fuzz.ratio):
         # Use fuzzywuzzy to find the closest match in your dictionary to the user query
 
-        best_match = process.extract(entities, choices, scorer=fuzz.ratio, processor=utils.default_process, limit=1)
+        best_match = process.extract(entities, choices, scorer=scorer, processor=utils.default_process, limit=1)
 
         # best_match is a tuple containing the best matching movie title and a score
         # matching_movie_title, score = best_match
