@@ -1,7 +1,6 @@
 import pandas
 
 from conf import MOVIE_NET_INDEX
-from WikiDataApiWrapper import WikiDataApiWrapper
 
 
 class ImageResponseGenerator:
