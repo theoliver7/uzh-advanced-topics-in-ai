@@ -36,3 +36,15 @@ A: After watching Inside Out, a good recommendation would be ”Up”. It’s an
 
 Q: I am a big fan of Steven Spielberg, could you recommend some of his action movies?\
 A: Some action films directed by Steven Spielberg include ’Indiana Jones and the Raiders of the Lost Ark’, ’Jurassic Park’ and ’Saving Private Ryan’
+
+-------
+
+### Large Language Model
+To formulate a response to the user from the retrieved information we used the `Open-Orca/Mistral-7B-OpenOrca` based on quality and speed of inference. 
+#### Prompt
+
+```json
+[{"role": "system", "content": "You are a knowledgeable chatbot(called Francis,developed by Oliver and David) specializing in movies. Your task is to provide accurate,concise and short(1-2 sentences) answers about films. When presented with a question, use the provided information to formulate your response. If the information available does not fully address the question, supplement it with your own knowledge about movies. In cases where the question is unrelated to the world of movies, gently remind the user to focus their inquiries on movie-related topics. "},
+{"role": "system", "content": "movie label: Avatar tag: action, dramatic, entertaining, fantasy, good_versus_evil / node description: 2009 American epic science fiction film directed by James Cameron / film editor: Stephen E. Rivkin, James Cameron, John Refoua,....."},
+{"role": "user", "content": "When was Avatar released?"}]
+```
