@@ -1,151 +1,38 @@
-# Speakeasy Python Client Library
+# UZH Advanced Topics in AI Project
+This project involves the development of a chatbot designed to answer questions related to a movie dataset represented as a knowledge graph. The chatbot leverages a combination of Named Entity Recognition (NER), fuzzy search, a knowledge graph, and a Large Language Model (LLM) to provide accurate and contextually relevant responses to user queries.
 
-## Getting started
+------
+### Architecture
+To address the challenge of developing a conversational agent that answers questions based on a given dataset, we chose an architecture based on RAG. Given the need to run on a laptop while still providing timely responses, we incorporated additional NLP techniques to ensure that only one interaction with the LLM is necessary.
+![image](https://github.com/theoliver7/uzh-advanced-topics-in-ai/assets/10463395/185509da-f323-434b-bb26-1dd022274b7e)
+- **User/Bot Interaction**: The interaction begins when a question is posed to the chatbot.
+- **NER and Fuzzy Search**: Identifies and extracts specific entity types from the text and matches these entities with the closest possible entries in the graph nodes.
+- **Question Classifier**: Determines if the question is multimedia-related to process it appropriately.
+- **Knowledge Graph**: Contains metadata about movies, actors, and their interrelationships to provide contextual information.
+- **Crowdsourcing Information**: Integrates augmented information from crowdsourcing.
+- **Prompt Generation**: Generates a prompt that includes the user’s question and relevant information for the LLM.
+- **MovieNet Dataset**: Utilizes the provided dataset to support content generation.
+- **Rule-based Generation**: Handles multimedia questions based on pre-determined rules.
+- **LLM Processing**: Uses the pre-trained Mistral-7B model to generate text-based responses.
+- **Response Delivery**: Sends the generated response back to the user.
+- **Question Cache**: Stores previously asked questions and their responses to improve response speed.
 
-### 1. Install
 
-We provide a pre-built `whl` file for installation since `speakeasypy` has not been publicly released on PyPI for now.
-You can find this file at the following path: `speakeasy-python-client-library/dist/speakeasypy-1.0.0-py3-none-any.whl`
+------
+### Questions/Answer showcase
+#### Closed Question
+Q: Did Tom Hanks play in Captain America: Civiliel War?\
+A: No, Tom Hanks did not appear in ”Captain America: Civil War”. The main cast members included Robert Downey Jr., Chris Evans, Scarlett Johansson, and many others.\
 
-To install speakeasy in your local environment, use the following command:
 
-```shell
-pip install [local]/[path]/[to]/[your]/speakeasy-python-client-library/dist/speakeasypy-1.0.0-py3-none-any.whl
-```
+Q: When was the latest Avatar (Way of Water) released?\
+A: The movie ”Avatar: The Way of Water” was released on December 16, 2022.
 
-Please replace `[local]/[path]/[to]/[your]` with the actual path to the directory containing
-the `speakeasypy-1.0.0-py3-none-any.whl` file.
 
-### 2. Initialize the Speakeasy Python framework and login
+#### Open Questions
+Q: What do you recommend to watch after inside out?\
+A: After watching Inside Out, a good recommendation would be ”Up”. It’s an emotional and heartwarming story that complements the themes of friendship and personal growth found in Inside Out.
 
-Please ensure that you are using the valid username and password of your bot.
 
-```python
-from speakeasypy import Speakeasy
-speakeasy = Speakeasy(host='https://speakeasy.ifi.uzh.ch', username='name', password='pass')
-speakeasy.login()  
-# This framework will help you log out automatically when the program terminates.
-```
-
-### 3. Get chatrooms
-
-```python
-# Only check active chatrooms (i.e., remaining_time > 0) if active=True.
-rooms = speakeasy.get_rooms(active=True)
-```
-
-### 4. Check messages and reactions in each chatroom, then post your messages to the corresponding room
-
-```python
-for room in rooms:
-    # Retrieve messages from this chat room.
-    # If only_partner=True, it filters out messages sent by the current bot.
-    # If only_new=True, it filters out messages that have already been marked as processed.
-    for message in room.get_messages(only_partner=True, only_new=True):
-        # Implement your agent here #
-        # Send a message to the corresponding chat room using the post_messages method of the room object.
-        room.post_messages(f"Received your message: '{message.message}' ")
-        # Mark the message as processed, so it will be filtered out when retrieving new messages.
-        room.mark_as_processed(message)
-    # Retrieve reactions from this chat room.
-    # If only_new=True, it filters out reactions that have already been marked as processed.
-    for reaction in room.get_reactions(only_new=True):
-        # Implement your agent here #
-        room.post_messages(f"Received your reaction: '{reaction.type}' ")
-        room.mark_as_processed(reaction)
-```
-
-*Note: Each API endpoint has an embedded rate limit. If the rate of calls to an endpoint (e.g., `get_rooms()`)
-exceeds this limit, the returned result will be replaced with a cached value.
-
-### 5. Additional Use Case
-
-You can find a more comprehensive use case in `speakeasy-python-client-library/usecases/demo_bot.py`.
-
-## Documentation for Relevant Classes
-
-### Class Speakeasy
-
-The `Speakeasy` class is the main entry point for `speakeasypy` library.
-
-#### Methods
-
-| Method      | Description                           | Parameters                                                                                                           | Returns                                                                   |
-|-------------|---------------------------------------|----------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `login`     | Logs in to the Speakeasy platform.    | None                                                                                                                 | `str`: Session token.                                                     |
-| `logout`    | Logs out from the Speakeasy platform. | None                                                                                                                 | None                                                                      |
-| `get_rooms` | Retrieves a list of chat rooms.       | `active` (bool, optional): If `True`, returns active chat rooms (rooms with remaining time > 0). Defaults to `True`. | `List[Chatroom]`: A list of Chatroom objects representing the chat rooms. |
-
-### Class Chatroom
-
-#### Methods
-
-| Method              | Description                                          | Parameters                                                                                                                                                                                                            | Returns                                                        |
-|---------------------|------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
-| `get_messages`      | Retrieves chat messages from the chatroom.           | `only_partner` (bool, optional): If `True`, returns messages from the chat partner only. Defaults to `True`. <br> `only_new` (bool, optional): If `True`, returns only new, unprocessed messages. Defaults to `True`. | `List[RestChatMessage]`: A list of chat messages.              |
-| `get_reactions`     | Retrieves reactions from the chatroom.               | `only_new` (bool, optional): If `True`, returns only new, unprocessed reactions. Defaults to `True`.                                                                                                                  | `List[ChatMessageReaction]`: A list of chat message reactions. |
-| `post_messages`     | Posts a message to the chatroom.                     | `message` (str): The message to be posted.                                                                                                                                                                            | None                                                           |
-| `mark_as_processed` | Marks a message or reaction as processed.            | `msg_or_rec` (RestChatMessage or ChatMessageReaction]): The message or reaction to mark as processed.                                                                                                                 | None                                                           |
-| `get_chat_partner`  | Gets the alias of your chat partner in the chatroom. | None                                                                                                                                                                                                                  | `str`: The alias of your chat partner.                         |
-
-#### Properties
-
-| Property Name    | Description                                                                                             | Type        |
-|------------------|---------------------------------------------------------------------------------------------------------|-------------|
-| `room_id`        | A unique identifier for the chatroom.                                                                   | `str`       |
-| `my_alias`       | The alias of this bot for the chatroom.                                                                 | `str`       |
-| `prompt`         | The prompt associated with the chatroom.                                                                | `str`       |
-| `start_time`     | The starting time of the chatroom.                                                                      | `int`       |
-| `remaining_time` | The remaining time for the chatroom's activity.                                                         | `int`       |
-| `user_aliases`   | A list of user aliases participating in the chatroom (generally including a chat partner and your bot). | `List[str]` |
-| `initiated`      | A flag indicating whether a welcome message has been sent.                                              | `bool`      |
-| `session_token`  | The session token associated with the chatroom.                                                         | `str`       |
-
-### Class RestChatMessage
-
-#### Properties
-
-| Property Name  | Type  |
-|----------------|-------|
-| `time_stamp`   | `int` |
-| `author_alias` | `str` |
-| `ordinal`      | `int` |
-| `message`      | `str` |
-
-### Class ChatMessageReaction
-
-#### Properties
-
-| Property Name     | Type                                                        |
-|-------------------|-------------------------------------------------------------|
-| `message_ordinal` | `int`                                                       |
-| `type`            | `str` (possible values: "THUMBS_UP", "THUMBS_DOWN", "STAR") |
-
-## Development for this package
-
-This pacakge `speakeasypy` depends on an internal package `speakeasypy.openapi.client` which is generated by openapi.
-Therefore, developers need to re-build this internal package if the openapi specification (inputSpec) changed.
-
-Install `speakeasypy` locally:
-
-The following command generates `egg` files instead of `whl`.
-
-```shell
-python setup.py install
-````
-
-Distribute `speakeasypy` and test it locally:
-
-The following command generates the source code and a `whl` file, then you can test it.
-
-```shell
-python setup.py sdist bdist_wheel
-pip install [local]/[path]/[to]/[your]/dist/speakeasypy_xxx.whl
-```
-
-Note: make sure you have installed `wheel` for development.
-
-```shell
-pip install wheel
-```
-
+Q: I am a big fan of Steven Spielberg, could you recommend some of his action movies?\
+A: Some action films directed by Steven Spielberg include ’Indiana Jones and the Raiders of the Lost Ark’, ’Jurassic Park’ and ’Saving Private Ryan’
